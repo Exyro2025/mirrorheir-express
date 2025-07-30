@@ -133,53 +133,6 @@
     </div>
   </div>
 
-  <script type="module">
-    import { jsPDF } from "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-
-    const form = document.getElementById("legacy-form");
-    const output = document.getElementById("letter-output");
-    const outputContainer = document.getElementById("output-container");
-    const downloadBtn = document.getElementById("download-pdf");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      output.innerHTML = "Generating...";
-      outputContainer.style.display = "block";
-
-      const recipient = document.getElementById("recipient").value;
-      const tone = document.getElementById("tone").value;
-      const message = document.getElementById("message").value;
-
-      const prompt = `You are an emotional memory companion. Help someone write a letter to ${recipient} in a ${tone} tone. Use the following message as guidance: \"${message}\".`;
-
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer YOUR_OPENAI_API_KEY"
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [{ role: "user", content: prompt }],
-          max_tokens: 700,
-          temperature: 0.8
-        })
-      });
-
-      const data = await response.json();
-      const letter = data.choices[0].message.content;
-      output.innerText = letter;
-      downloadBtn.style.display = "inline-block";
-
-      downloadBtn.onclick = () => {
-        const doc = new jsPDF();
-        const splitText = doc.splitTextToSize(letter, 180);
-        doc.text(splitText, 15, 20);
-        doc.save("MirrorHeir_Letter.pdf");
-      };
-    });
-  </script>
-
 </form>
 
 <div id="output-container">
