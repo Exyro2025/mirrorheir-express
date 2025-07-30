@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MirrorHeir Express</title>
+  <link rel="stylesheet" href="styles/style.css" />
+  <script src="libs/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>MirrorHeir Express™</h1>
+    <p>Create a lasting letter to your loved one, powered by AI.</p>
+
+    <form id="legacy-form">
+      <label for="recipient">Recipient:</label>
+      <select id="recipient">
+        <option value="my daughter">My Daughter</option>
+        <option value="my partner">My Partner</option>
+        <option value="my future self">My Future Self</option>
+        <option value="my mother">My Mother</option>
+        <option value="my father">My Father</option>
+      </select>
+
+      <label for="tone">Tone:</label>
+      <select id="tone">
+        <option value="loving">Loving</option>
+        <option value="grateful">Grateful</option>
+        <option value="apologetic">Apologetic</option>
+        <option value="brave">Brave</option>
+        <option value="reflective">Reflective</option>
+      </select>
+
+      <label for="message">What do you want to say?</label>
+      <textarea id="message" rows="6" placeholder="Write a few notes or feelings you'd like the AI to expand upon..."></textarea>
+
+      <button type="submit">Generate Letter</button>
+    </form>
+
+    <div id="output-container">
+      <h2>Your Letter</h2>
+      <div id="letter-output"></div>
+      <button id="download-pdf" style="display: none;">Download as PDF</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { jsPDF } from "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+
+    const form = document.getElementById("legacy-form");
+    const output = document.getElementById("letter-output");
+    const downloadBtn = document.getElementById("download-pdf");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      output.innerHTML = "Generating...";
+
+      const recipient = document.getElementById("recipient").value;
+      const tone = document.getElementById("tone").value;
+      const message = document.getElementById("message").value;
+
+      const prompt = `You are an emotional memory companion. Help someone write a letter to ${recipient} in a ${tone} tone. Use the following message as guidance: \"${message}\".`;
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer YOUR_OPENAI_API_KEY"
+        },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 700,
+          temperature: 0.8
+        })
+      });
+
+      const data = await response.json();
+      const letter = data.choices[0].message.content;
+      output.innerText = letter;
+      downloadBtn.style.display = "inline-block";
+
+      downloadBtn.onclick = () => {
+        const doc = new jsPDF();
+        const splitText = doc.splitTextToSize(letter, 180);
+        doc.text(splitText, 15, 20);
+        doc.save("MirrorHeir_Letter.pdf");
+      };
+    });
+  </script>
+</body>
+</html>
