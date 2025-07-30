@@ -179,6 +179,63 @@
       };
     });
   </script>
+</form>
+
+<div id="output-container">
+  <h2>Your Letter</h2>
+  <div id="letter-output"></div>
+  <button id="download-pdf" style="display: none;">Download as PDF</button>
+</div>
+</div> <!-- closes .container -->
+
+<script type="module">
+  import { jsPDF } from "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+
+  const form = document.getElementById("legacy-form");
+  const output = document.getElementById("letter-output");
+  const outputContainer = document.getElementById("output-container");
+  const downloadBtn = document.getElementById("download-pdf");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    output.innerHTML = "Generating...";
+    outputContainer.style.display = "block";
+
+    const recipient = document.getElementById("recipient").value;
+    const tone = document.getElementById("tone").value;
+    const message = document.getElementById("message").value;
+
+    try {
+      const response = await fetch("/api/generate-letter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ recipient, tone, message })
+      });
+
+      const data = await response.json();
+      if (!data.letter) throw new Error("No letter received.");
+
+      const letter = data.letter;
+      output.innerText = letter;
+      downloadBtn.style.display = "inline-block";
+
+      downloadBtn.onclick = () => {
+        const doc = new jsPDF();
+        const splitText = doc.splitTextToSize(letter, 180);
+        doc.text(splitText, 15, 20);
+        doc.save("MirrorHeir_Letter.pdf");
+      };
+    } catch (err) {
+      output.innerText = "Something went wrong. Please try again.";
+      console.error("Error generating letter:", err);
+    }
+  });
+</script>
+</body>
+</html>
+
 </body>
 </html>
 
