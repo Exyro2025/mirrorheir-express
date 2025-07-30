@@ -179,6 +179,17 @@
       };
     });
   </script>
+  <form id="legacy-form">
+  <label for="recipient">Recipient</label>
+  <input type="text" id="recipient" required />
+
+  <label for="tone">Tone</label>
+  <input type="text" id="tone" required />
+
+  <label for="message">Message</label>
+  <textarea id="message" required></textarea>
+
+  <button type="submit">Generate Letter</button>
 </form>
 
 <div id="output-container">
@@ -186,7 +197,6 @@
   <div id="letter-output"></div>
   <button id="download-pdf" style="display: none;">Download as PDF</button>
 </div>
-</div> <!-- closes .container -->
 
 <script type="module">
   import { jsPDF } from "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
