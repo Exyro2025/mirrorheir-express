@@ -1,0 +1,22 @@
+{
+  "name": "mirrorheir-express",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "AI-powered letter generation for MirrorHeir Express",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "ai",
+    "letter",
+    "vercel",
+    "openai",
+    "express"
+  ],
+  "author": "Your Name Here",
+  "license": "ISC",
+  "dependencies": {
+    "openai": "^4.0.0" 
+  }
+}
